@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Card</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #ffccd5;
+            font-family: Arial, sans-serif;
+        }
+        .card-container {
+            position: relative;
+            width: 300px;
+            height: 400px;
+            perspective: 1000px;
+        }
+        .card {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            transform: rotateY(0deg);
+            cursor: pointer;
+        }
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+        .card-side {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .front {
+            background: url('https://cdn.discordapp.com/attachments/1270601841566285868/1338748460265902080/4324B720-2BC9-486E-97D3-67C057898381.jpg?ex=67af81e9&is=67ae3069&hm=6d8aa8943ee733f36926e603e239cf08b05059592dd797c0440ae0a899799c54&') no-repeat center/cover;
+            background-size: cover;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            z-index: 1;
+        }
+        .front h1 {
+            font-family: 'Brush Script MT', cursive;
+            color: #fff;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+        }
+        .back {
+            background: #fff;
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            font-family: 'Arial', sans-serif;
+            z-index: 0;
+            overflow: hidden;
+            box-sizing: border-box;
+            border-radius: 10px;
+        }
+        .back h2 {
+            font-size: 18px;
+            color: #ff4d6d;
+            margin-bottom: 10px;
+        }
+        .back p {
+            font-size: 12px; /* Smaller text by default */
+            color: #333;
+            text-align: center;
+            line-height: 1.5;
+            word-wrap: break-word;
+            max-width: 260px;
+            margin: 0;
+        }
+        .flip-button {
+            position: absolute;
+            top: 10px; /* Raised button */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ff4d6d;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+        .flip-button:hover {
+            background-color: #ff3366;
+        }
+        .zoomed-text {
+            font-size: 18px; /* Larger font for better readability */
+            line-height: 1.8;
+            text-align: left;
+            margin: 20px;
+            max-width: 400px;
+            color: #333;
+            word-wrap: break-word;
+        }
+        .zoomed-container {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 80%;
+            max-height: 80%;
+            overflow-y: scroll;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            z-index: 20;
+        }
+        .zoomed-container button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ff4d6d;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="card-container">
+        <div class="card" id="valentineCard" onclick="zoomInText()">
+            <div class="card-side front">
+                <h1>Happy Valentine's Day Mommy :3</h1>
+            </div>
+            <div class="card-side back">
+                <h2>Love Letter</h2>
+                <p>My Dearest Isabella,</p>
+                <p>Happy Valentine's Day, my love! :3</p>
+                <p>I want to take a moment to tell you just how much you mean to me...</p>
+                <!-- Shortened for brevity -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Flip Button placed above the card container -->
+    <button class="flip-button" id="flipBtn" onclick="flipCard()">Flip the Card</button>
+
+    <!-- Audio element -->
+    <audio id="backgroundMusic" loop>
+        <source src="test.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        // Get the audio element and flip button
+        const audio = document.getElementById('backgroundMusic');
+        const flipButton = document.getElementById('flipBtn');
+        const card = document.getElementById('valentineCard');
+
+        // Function to flip the card
+        function flipCard() {
+            if (!audio.paused) {
+                // If the song is playing, just flip the card
+                card.classList.toggle('flipped');
+            } else {
+                // If the song is not playing, start it and then flip the card
+                audio.play();
+                card.classList.toggle('flipped');
+            }
+        }
+
+        // Function to zoom in on the text (back of the card)
+        function zoomInText() {
+            const card = document.getElementById('valentineCard');
+            if (card.classList.contains('flipped')) { // Only zoom in when the card is flipped
+                const zoomedText = `
+                    <div class="zoomed-text">
+                        My Dearest Isabella,<br><br>
+                        Happy Valentine's Day, my love! :3<br><br>
+                        I want to take a moment to tell you just how much you mean to me. From the first moment we started talking, I knew there was something special about you...
+                    </div>
+                `;
+                const zoomedContainer = document.createElement('div');
+                zoomedContainer.classList.add('zoomed-container');
+                zoomedContainer.innerHTML = zoomedText;
+                const closeButton = document.createElement('button');
+                closeButton.innerHTML = 'Close';
+                closeButton.onclick = function() {
+                    zoomedContainer.remove();
+                };
+                zoomedContainer.appendChild(closeButton);
+                document.body.appendChild(zoomedContainer);
+            }
+        }
+    </script>
+</body>
+</html>
